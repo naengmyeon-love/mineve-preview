@@ -24,7 +24,7 @@ jobs:
       - name: Prepare standalone site
         run: |
           mkdir -p deploy
-          cp MINEVE-standalone.html deploy/index.html
+          cp index.html deploy/index.html
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
         with:
