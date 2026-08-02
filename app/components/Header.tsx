@@ -28,17 +28,25 @@ export function Header() {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   return (
     <>
       <header className={`site-header ${overlay ? "site-header--overlay" : "site-header--surface"}`}>
         <div className="site-header__inner">
-          <Link className="wordmark" href="/" aria-label="MINEVE 홈">MINEVE<small>Minerals through Jeju</small></Link>
+          <Link className="wordmark" href="/" aria-label="MINEVE 홈">MINEVE</Link>
           <nav className="desktop-nav" aria-label="주요 메뉴">
             {nav.map((item) => <Link key={item.href} href={item.href} aria-current={pathname.startsWith(item.href) ? "page" : undefined}>{item.label}</Link>)}
           </nav>
           <div className="header-tools">
             <Link href="/shop">Shop</Link>
-            <Link href="/cart">Cart <span>0</span></Link>
+            <Link className="cart-link" href="/cart" aria-label="장바구니, 담긴 상품 0개">Bag <span>0</span></Link>
           </div>
           <button className="menu-toggle" type="button" aria-label={open ? "메뉴 닫기" : "메뉴 열기"} aria-expanded={open} onClick={() => setOpen(!open)}>
             <span>{open ? "Close" : "Menu"}</span><i /><i />

@@ -3,10 +3,11 @@ import type { CSSProperties, ReactNode } from "react";
 import { collections, formatPrice, notes, products, type Note, type Product } from "../data/content";
 
 export function Media({ src, alt, className = "", priority = false }: { src: string; alt: string; className?: string; priority?: boolean }) {
+  const resolvedSrc = src.startsWith("/") ? `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${src}` : src;
   return (
     <figure className={`media ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt={alt} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} />
+      <img src={resolvedSrc} alt={alt} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : "auto"} />
     </figure>
   );
 }
@@ -79,7 +80,7 @@ export function CollectionPage({ lineId }: { lineId: keyof typeof collections })
 
       <section className="section page-shell">
         <SectionTitle index="01" eyebrow="The collection" title="감각을 위한 세 가지 기준" copy="작은 카드의 나열 대신, 각 제품이 만드는 장면과 질감에 충분한 공간을 주었습니다." />
-        <div className="feature-products">
+        <div className={`feature-products feature-products--${lineId}`}>
           {lineProducts.map((product, index) => (
             <article className="feature-product" key={product.slug} data-reveal>
               <Media src={product.image} alt={`${product.name} 패키지와 텍스처`} />
@@ -98,6 +99,23 @@ export function CollectionPage({ lineId }: { lineId: keyof typeof collections })
           ))}
         </div>
       </section>
+
+      {lineId === "salt" && (
+        <section className="standards-strip" aria-label="MINEVE SALT 기준">
+          {[
+            ["JEJU ORIGIN", "제주 단일 원료"],
+            ["NATURAL MINERAL", "자연 미네랄"],
+            ["CLEAN PROCESS", "깨끗한 공정"],
+            ["QUALITY STANDARD", "엄격한 품질 기준"],
+          ].map(([title, copy], index) => (
+            <div key={title}>
+              <span aria-hidden="true">0{index + 1}</span>
+              <strong>{title}</strong>
+              <p>{copy}</p>
+            </div>
+          ))}
+        </section>
+      )}
 
       <section className="texture-section">
         <div className="page-shell split-story">

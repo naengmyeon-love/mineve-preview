@@ -21,9 +21,13 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   return (
     <main className="product-detail-page">
       <section className="product-detail-new page-shell">
+        <div className="product-thumbnails" aria-label="상품 이미지 목록">
+          {[product.image, product.image, product.image].map((image, index) => (
+            <Media src={image} alt={`${product.name} 미리보기 ${index + 1}`} key={`${image}-${index}`} />
+          ))}
+        </div>
         <div className="product-gallery-new">
           <Media src={product.image} alt={`${product.name} 패키지 전면`} priority />
-          <Media src={product.image} alt={`${product.name} 원료와 텍스처 클로즈업`} />
         </div>
         <div className="product-buy">
           <p className="kicker">MINEVE {product.line}</p>
@@ -33,7 +37,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           <p className="product-buy__lead">{product.description}</p>
           <label htmlFor="quantity">Quantity</label>
           <select id="quantity" defaultValue="1"><option>1</option><option>2</option><option>3</option></select>
-          <button className="add-button" type="button">Add to cart · {formatPrice(product.price)}</button>
+          <div className="purchase-actions">
+            <button className="add-button add-button--outline" type="button">Add to cart</button>
+            <button className="add-button" type="button">Buy now</button>
+          </div>
           <details open><summary>제품 특징</summary><p>{product.detail}</p></details>
           <details><summary>사용 방법</summary><p>{product.use}</p></details>
           <details><summary>원료 / 성분</summary><p>{product.ingredients}</p></details>

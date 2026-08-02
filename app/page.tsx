@@ -18,13 +18,13 @@ export default function Home() {
       </section>
 
       <section className="section page-shell manifesto">
-        <Media src={images.basalt} alt="물과 이끼가 머문 제주 현무암의 표면" />
         <div data-reveal>
           <p className="kicker">01 · Brand manifesto</p>
           <h2>제주의 물은<br />화산의 시간을 지나며<br />긴 균형을 담습니다.</h2>
           <p>우리는 그 보이지 않는 흐름을 식탁과 피부, 몸의 리듬으로 옮깁니다. 자연을 장식처럼 쓰지 않고, 출처와 과정의 언어로 오래 기록합니다.</p>
           <ArrowLink href="/our-story">Our Story</ArrowLink>
         </div>
+        <Media src={images.basalt} alt="물과 이끼가 머문 제주 현무암의 표면" />
       </section>
 
       <section className="section collections-section">
