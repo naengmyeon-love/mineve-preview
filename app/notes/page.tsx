@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { NoteCard, SectionTitle } from "../components/BrandUI";
+import { NoteCard } from "../components/BrandUI";
 import { notes } from "../data/content";
 
-export const metadata: Metadata = { title: "Notes", description: "섬과 물질, 식탁과 몸에 관한 MINEVE의 기록." };
+export const metadata: Metadata = { title: "Notes", description: "섬과 물, 식탁과 몸에 관한 MINEVE의 기록." };
 
 export default function NotesPage() {
   return (
-    <main className="index-page">
-      <section className="index-masthead page-shell">
-        <SectionTitle eyebrow="MINEVE Editorial" title="섬과 물질, 일상을 읽는 방법" copy="제품을 설명하기보다 우리가 오래 바라보는 것들을 기록합니다." />
-        <div className="filter-row" aria-label="노트 카테고리">{["All", "Island", "Mineral", "Table", "Skin", "Body"].map((label, index) => <button type="button" className={index === 0 ? "is-active" : ""} key={label}>{label}</button>)}</div>
-      </section>
-      <section className="notes-index page-shell">
+    <main className="notes-page page-shell">
+      <header className="index-masthead">
+        <p>MINEVE Editorial</p>
+        <h1>Notes</h1>
+        <span>제품보다 오래 남는 섬과 물, 일상의 기록</span>
+        <nav aria-label="Notes 카테고리">
+          {["All", "Island", "Mineral", "Table", "Skin", "Body"].map((label, index) => <a href={index === 0 ? "#notes-grid" : `#${label.toLowerCase()}`} key={label}>{label}</a>)}
+        </nav>
+      </header>
+      <section id="notes-grid" className="notes-index">
         <NoteCard note={notes[0]} featured />
-        {notes.slice(1).map((note) => <NoteCard note={note} key={note.slug} />)}
+        {notes.slice(1).map((note) => <div id={note.category.toLowerCase()} key={note.slug}><NoteCard note={note} /></div>)}
       </section>
     </main>
   );

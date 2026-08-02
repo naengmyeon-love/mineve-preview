@@ -1,5 +1,4 @@
-import { Breadcrumb } from "./Breadcrumb";
-import { SectionHeading } from "./SectionHeading";
+import Link from "next/link";
 
 export function StaticNoticePage({
   eyebrow,
@@ -12,11 +11,12 @@ export function StaticNoticePage({
 }) {
   return (
     <main className="utility-page page-shell">
-      <Breadcrumb items={[{ label: "Home", href: "/" }, { label: title }]} />
-      <SectionHeading eyebrow={eyebrow} title={title} description={description} level="h1" />
-      <div className="static-notice" data-reveal>
-        <p>현재 대표 검토를 위한 정적 프로토타입입니다.</p>
-        <p>실제 서비스 정책과 외부 시스템이 확정된 뒤 이 화면의 기능과 세부 내용을 연결합니다.</p>
+      <p className="kicker">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p>{description}</p>
+      <div className="utility-page__links" data-reveal>
+        <Link prefetch={false} href="/shop">Shop 둘러보기 ↗</Link>
+        <a href="mailto:hello@mineve.co.kr">hello@mineve.co.kr ↗</a>
       </div>
     </main>
   );

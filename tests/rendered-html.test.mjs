@@ -28,12 +28,14 @@ test("renders the MINEVE home page without starter markers", async () => {
 
 test("renders all primary static overview routes", async () => {
   const routes = [
-    ["/salt", "MINEVE SALT"],
-    ["/renew", "MINEVE RENEW"],
-    ["/rest", "MINEVE REST"],
-    ["/our-story", "From origin to ritual"],
+    ["/collections", "Collections"],
+    ["/collections/salt", "MINEVE[\\s\\S]*SALT"],
+    ["/collections/renew", "MINEVE[\\s\\S]*RENEW"],
+    ["/collections/rest", "MINEVE[\\s\\S]*REST"],
+    ["/our-story", "제주와 시간에서"],
     ["/notes", "MINEVE Editorial"],
     ["/shop", "MINEVE Shop"],
+    ["/products/jeju-mineral-salt-original", "제주 미네랄 솔트 오리지널"],
   ];
 
   for (const [pathname, expected] of routes) {
@@ -43,17 +45,15 @@ test("renders all primary static overview routes", async () => {
   }
 });
 
-test("keeps product numbers and claim-status data centralized", async () => {
-  const data = await readFile(new URL("../app/data/site.ts", import.meta.url), "utf8");
-  const productCard = await readFile(new URL("../app/components/ProductCard.tsx", import.meta.url), "utf8");
-  const linePage = await readFile(new URL("../app/components/LinePage.tsx", import.meta.url), "utf8");
+test("keeps products, notes, and story chapters in centralized content data", async () => {
+  const data = await readFile(new URL("../app/data/content.ts", import.meta.url), "utf8");
+  const brandUI = await readFile(new URL("../app/components/BrandUI.tsx", import.meta.url), "utf8");
 
-  assert.match(data, /mineve-salt-original/);
+  assert.match(data, /jeju-mineral-salt-original/);
   assert.match(data, /night-magnesium-balance/);
-  assert.match(data, /EvidenceStatus/);
-  assert.match(data, /"draft" \| "verified" \| "hidden"/);
-  assert.match(data, /publishedMineralEvidence/);
-  assert.doesNotMatch(data, /검증 대기/);
-  assert.match(productCard, /formatPrice/);
-  assert.match(linePage, /products\.filter/);
+  assert.match(data, /storyChapters/);
+  assert.match(data, /passageSteps/);
+  assert.doesNotMatch(data, /Lorem ipsum|placeholder/i);
+  assert.match(brandUI, /formatPrice/);
+  assert.match(brandUI, /products\.filter/);
 });

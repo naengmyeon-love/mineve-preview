@@ -42,9 +42,10 @@ const outputRoot =
   fileURLToPath(new URL("../.qa/", import.meta.url));
 const routes = [
   "/",
-  "/salt",
-  "/renew",
-  "/rest",
+  "/collections",
+  "/collections/salt",
+  "/collections/renew",
+  "/collections/rest",
   "/our-story",
   "/notes",
   "/notes/water-beneath-jeju",
@@ -88,6 +89,10 @@ for (const pathname of routes) {
     h1: document.querySelector("h1")?.textContent?.trim(),
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,
+    overflowElements: [...document.querySelectorAll("*")]
+      .filter((element) => element.getBoundingClientRect().right > document.documentElement.clientWidth + 1)
+      .slice(0, 8)
+      .map((element) => ({ tag: element.tagName, className: element.className, right: Math.round(element.getBoundingClientRect().right) })),
   }));
   result.routes.push({
     path: pathname,
@@ -100,11 +105,17 @@ for (const pathname of routes) {
     overflow: metrics.scrollWidth > metrics.clientWidth,
     scrollWidth: metrics.scrollWidth,
     clientWidth: metrics.clientWidth,
+    overflowElements: metrics.overflowElements,
   });
 }
 
 await desktop.goto(baseUrl, { waitUntil: "domcontentloaded" });
-await desktop.waitForTimeout(1200);
+for (let y = 0; y < await desktop.evaluate(() => document.body.scrollHeight); y += 800) {
+  await desktop.evaluate((nextY) => scrollTo(0, nextY), y);
+  await desktop.waitForTimeout(70);
+}
+await desktop.evaluate(() => scrollTo(0, 0));
+await desktop.waitForTimeout(500);
 await desktop.screenshot({
   path: `${outputRoot}\\mineve-home-desktop.png`,
   fullPage: true,
@@ -135,8 +146,13 @@ mobile.on("console", (message) => {
 });
 mobile.on("pageerror", (error) => result.pageErrors.push(`mobile: ${error.message}`));
 await mobile.goto(baseUrl, { waitUntil: "domcontentloaded" });
-await mobile.waitForTimeout(1200);
-await mobile.getByRole("button", { name: "메뉴 열기" }).click();
+for (let y = 0; y < await mobile.evaluate(() => document.body.scrollHeight); y += 600) {
+  await mobile.evaluate((nextY) => scrollTo(0, nextY), y);
+  await mobile.waitForTimeout(70);
+}
+await mobile.evaluate(() => scrollTo(0, 0));
+await mobile.waitForTimeout(500);
+await mobile.getByRole("button", { name: "Menu" }).click();
 result.mobileMenu = {
   open: (await mobile.locator(".mobile-menu--open").count()) === 1,
   focused: await mobile.evaluate(
@@ -158,9 +174,17 @@ await mobile.waitForTimeout(1200);
 result.mobileProduct = await mobile.evaluate(() => ({
   overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
   bodyFont: getComputedStyle(document.body).fontSize,
-  hasProductDetails: document.querySelectorAll(".product-buy details").length >= 4,
+  gallery: [...document.querySelectorAll(".product-gallery .media")].map((element) => {
+    const box = element.getBoundingClientRect();
+    return { width: Math.round(box.width), height: Math.round(box.height), top: Math.round(box.top) };
+  }),
+  thumbnails: [...document.querySelectorAll(".product-thumbnails .media")].map((element) => {
+    const box = element.getBoundingClientRect();
+    return { width: Math.round(box.width), height: Math.round(box.height), top: Math.round(box.top) };
+  }),
+  hasProductDetails: document.querySelectorAll(".product-details details").length >= 5,
   hasPurchaseButton: [...document.querySelectorAll("button")].some(
-    (button) => button.textContent?.trim() === "Add to cart",
+    (button) => button.textContent?.trim() === "장바구니 담기",
   ),
 }));
 await mobile.screenshot({
