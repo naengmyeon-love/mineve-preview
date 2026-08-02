@@ -1,47 +1,27 @@
 import Link from "next/link";
-import { footerContent, navigation } from "../data/site";
-import { LocaleSwitcher } from "./LocaleSwitcher";
-import { NewsletterForm } from "./NewsletterForm";
 
 export function Footer() {
   return (
     <footer className="site-footer">
-      <div className="site-footer__top page-shell">
-        <div className="site-footer__statement">
-          <p className="wordmark">{footerContent.company.name}</p>
-          <h2>{footerContent.company.signature}</h2>
-          <address>{footerContent.company.location}</address>
-        </div>
-        <NewsletterForm />
+      <div className="site-footer__lead page-shell">
+        <p className="kicker">Keep in touch</p>
+        <h2>제주의 느린 소식을<br />받아보세요.</h2>
+        <form className="newsletter">
+          <label className="sr-only" htmlFor="newsletter-email">이메일</label>
+          <input id="newsletter-email" type="email" placeholder="Email address" />
+          <button type="submit" aria-label="뉴스레터 구독">↗</button>
+        </form>
       </div>
-      <div className="site-footer__directory page-shell">
+      <div className="site-footer__grid page-shell">
         <div>
-          <p className="footer-label">Explore</p>
-          <nav aria-label="푸터 주요 메뉴">
-            {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
-          </nav>
+          <p className="wordmark">MINEVE</p>
+          <p>Minerals through Jeju.<br />SALT · RENEW · REST</p>
         </div>
-        <div>
-          <p className="footer-label">Customer Care</p>
-          <nav aria-label="고객센터 및 정책 메뉴">
-            {footerContent.customerCare.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
-          </nav>
-        </div>
-        <div>
-          <p className="footer-label">Country / Language</p>
-          <LocaleSwitcher />
-        </div>
-        <div>
-          <p className="footer-label">Social</p>
-          <div className="site-footer__social" aria-label="소셜 채널">
-            {footerContent.social.map((item) => <button type="button" key={item} disabled>{item}</button>)}
-          </div>
-        </div>
+        <nav><p>Explore</p><Link href="/collections">Collections</Link><Link href="/our-story">Our Story</Link><Link href="/notes">Notes</Link><Link href="/shop">Shop</Link></nav>
+        <nav><p>Customer</p><Link href="/contact">Contact</Link><Link href="/shipping">Shipping & Returns</Link><Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></nav>
+        <div><p>Social</p><a href="https://instagram.com" target="_blank" rel="noreferrer">Instagram ↗</a><a href="https://pinterest.com" target="_blank" rel="noreferrer">Pinterest ↗</a></div>
       </div>
-      <div className="site-footer__bottom page-shell">
-        <span>© 2026 MINEVE</span>
-        <span>Minerals through Jeju</span>
-      </div>
+      <div className="site-footer__bottom page-shell"><span>© 2026 MINEVE</span><span>Jeju, Republic of Korea</span><span>상호명 마인브 · 사업자 정보는 정식 론칭 시 고지됩니다.</span></div>
     </footer>
   );
 }

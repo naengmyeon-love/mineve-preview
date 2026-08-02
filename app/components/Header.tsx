@@ -1,70 +1,57 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { navigation } from "../data/site";
-import { LocaleSwitcher } from "./LocaleSwitcher";
-import { MobileNavigation } from "./MobileNavigation";
+import { useEffect, useState } from "react";
+
+const nav = [
+  { label: "Collections", href: "/collections" },
+  { label: "Story", href: "/our-story" },
+  { label: "Notes", href: "/notes" },
+];
 
 export function Header() {
-  const [scrolled, setScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
-  const supportsOverlay = ["/", "/salt", "/renew", "/rest"].includes(pathname);
-  const useOverlay = supportsOverlay && !scrolled;
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const overlay = ["/", "/collections/salt", "/collections/renew", "/collections/rest", "/salt", "/renew", "/rest"].includes(pathname) && !scrolled && !open;
 
   useEffect(() => {
-    const update = () => setScrolled(window.scrollY > 24);
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    return () => window.removeEventListener("scroll", update);
+    const onScroll = () => setScrolled(window.scrollY > 36);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const closeMenu = useCallback(() => {
-    setMenuOpen(false);
-    window.setTimeout(() => menuButtonRef.current?.focus(), 0);
-  }, []);
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
 
   return (
     <>
-      <header
-        className={`site-header ${useOverlay ? "site-header--overlay" : "site-header--surface"} ${scrolled ? "site-header--scrolled" : ""}`}
-      >
-        <div className="site-header__inner page-shell">
-          <Link href="/" className="site-header__brand" aria-label="MINEVE 홈으로 이동">
-            <span className="wordmark">MINEVE</span>
-            <span className="site-header__signature">Minerals through Jeju</span>
-          </Link>
+      <header className={`site-header ${overlay ? "site-header--overlay" : "site-header--surface"}`}>
+        <div className="site-header__inner">
+          <Link className="wordmark" href="/" aria-label="MINEVE 홈">MINEVE<small>Minerals through Jeju</small></Link>
           <nav className="desktop-nav" aria-label="주요 메뉴">
-            {navigation.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={pathname === item.href ? "page" : undefined}>
-                {item.label}
-              </Link>
-            ))}
+            {nav.map((item) => <Link key={item.href} href={item.href} aria-current={pathname.startsWith(item.href) ? "page" : undefined}>{item.label}</Link>)}
           </nav>
-          <div className="site-header__tools">
-            <Link href="/search" aria-label="사이트 검색">Search</Link>
-            <Link href="/account" aria-label="계정 페이지">Account</Link>
-            <Link href="/cart" aria-label="장바구니, 상품 0개">Bag (0)</Link>
-            <LocaleSwitcher />
+          <div className="header-tools">
+            <Link href="/shop">Shop</Link>
+            <Link href="/cart">Cart <span>0</span></Link>
           </div>
-          <button
-            ref={menuButtonRef}
-            className="menu-button"
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            aria-label="메뉴 열기"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-navigation"
-          >
-            <span>Menu</span>
-            <span className="menu-button__lines" aria-hidden="true"><i /><i /></span>
+          <button className="menu-toggle" type="button" aria-label={open ? "메뉴 닫기" : "메뉴 열기"} aria-expanded={open} onClick={() => setOpen(!open)}>
+            <span>{open ? "Close" : "Menu"}</span><i /><i />
           </button>
         </div>
       </header>
-      <MobileNavigation open={menuOpen} onClose={closeMenu} />
+      <div className={`mobile-menu ${open ? "mobile-menu--open" : ""}`} aria-hidden={!open}>
+        <nav aria-label="모바일 메뉴">
+          {nav.map((item, index) => <Link key={item.href} href={item.href} onClick={() => setOpen(false)}><span>0{index + 1}</span>{item.label}</Link>)}
+          <Link href="/shop" onClick={() => setOpen(false)}><span>04</span>Shop</Link>
+        </nav>
+        <div><p>제주의 미네랄을,<br />매일의 균형으로.</p><small>JEJU · KOREA</small></div>
+      </div>
     </>
   );
 }
